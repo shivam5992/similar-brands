@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Recommend Similar Brands</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+		
+		<br><br>
+		<h2>Recommend Similar Brands</h2>
+		<br>
+
+		<div class="component">
+			<ul class="nav nav-tabs" role="tablist" id="myTab">
+				<li role="presentation" class="active"><a href="#Demo" aria-controls="Demo" role="tab" data-toggle="tab">Demo</a></li>
+				<li role="presentation"><a href="#Approach" aria-controls="Approach" role="tab" data-toggle="tab">Approach</a></li>
+			</ul>
+	
+		   	<div class="tab-content">
+				<div role="tabpanel" class="tab-pane active" id="Demo"> 
+					<h3>Demo:</h3>
+					<form name="param" action="/" method="POST">
+						<input type="text" name="inp_brand" placeholder="Enter brand ID ...">
+						<input type="text" name="limit" value="10">
+						<input type="submit">
+					</form>
+					{% if brands %}
+						<br><br>
+						<b>Brand Name: </b> {{ brands[0]['brandName'] }}<br>
+						<b>Brand ID: </b> {{ brands[0]['brandId'] }}
+						<br><br>
+						Most Similar Brands are:<br>
+						{% for brand in brands %}
+							<li> {{ brand['similarBrandName'] }} | {{ brand['score'] }} </li>
+						{% endfor %} 
+					{% else %}
+					<br><br>
+					{{ message }}
+					{% endif %}
+				</div>
+			
+
+				<div role="tabpanel" class="tab-pane" id="Approach">
+
+				<h3>About:</h3> 
+		    	<p>A service to recommend similar brands. The data consists of random shoppers and the brands that they have marked as favorites.</p>
+			    
+			    <b>Problem Statement:</b> Using the user's favourite brands data, identify the similar brands for every brand. <br><br>
+
+			    <b>Hypothesis Generation:</b> Before exploring the data, I generated the hypothesis around the factors that will make the brands similar. What could be the features that will affect the outcome of my model. I listed down a few: <br>
+			    <br>
+			    1. Type of Products sold by them - example - cloths brands, sports brands, cars brands etc. <br>
+			    2. Gender - for which gender the brands are famous for - example - male brands, female brands. <br>
+			    3. Parent Company - which is the main parent company for the brands. <br>
+			    4. Which type of people - gender brands, rich brands vs average brands. <br>
+
+			    <br>
+			    <b>Exploratory Data Analysis:</b>
+			    The data exploration stats were observed as follows: 
+			    <br><br>
+			    
+			    <p><b>Total Records:</b> 4,322,841 </p>
+			    <p><b>Unique Users:</b> 576,809 </p>
+			    <p><b>Unique Brands:</b> 11,288 </p>
+
+			    <br>
+
+			    <div class="row">
+			    	<div class="col-md-6">
+			    		<p><b>Most faourited brands:</b></p>
+			    		<table>
+							<tr><td> Marc by Marc Jacobs  </td><td> 119644 </td></tr>
+							<tr><td> Christian Louboutin  </td><td> 115665 </td></tr>
+							<tr><td> Burberry  </td><td> 112238 </td></tr>
+							<tr><td> Gucci  </td><td> 102444 </td></tr>
+							<tr><td> Marc Jacobs  </td><td> 93478 </td></tr>
+							<tr><td> Jimmy Choo  </td><td> 88514 </td></tr>
+							<tr><td> Prada  </td><td> 86677 </td></tr>
+							<tr><td> Diane von Furstenberg  </td><td> 82491 </td></tr>
+							<tr><td> Yves Saint Laurent  </td><td> 82203 </td></tr>
+							<tr><td> Chlo </td><td> 82130 </td></tr>
+						</table>
+					</div>
+				    <div class="col-md-6">
+					    <p><b>Least favoutited Brands</b></p>
+					    <table>
+						    <tr><td>Zita</td><td>1</td></tr>
+							<tr><td>Personalized With Luv</td><td>1</td></tr>
+							<tr><td>9 Months up, 9 Months down</td><td>1</td></tr>
+							<tr><td>Amy Zerner</td><td>1</td></tr>
+							<tr><td>Petit Chapeau</td><td>1</td></tr>
+							<tr><td>Atos Lombardini</td><td>1</td></tr>
+							<tr><td>Caran d'Ache</td><td>1</td></tr>
+							<tr><td>Yang Li</td><td>1</td></tr>
+							<tr><td>Tiedeken</td><td>1</td></tr>
+							<tr><td>Laura G</td><td>1</td></tr>
+					    </table>
+					</div>	
+				</div>
+
+			    <h3> Approach: </h3> 
+			    
+			    <p>
+
+			    After exploring the data, I divided the approach into three parts - 1. Create document vs brand matrix, 2. Create Brand Vs Brand similarity Matrix, 3. Identify the scoring threshold for marking two brands as similar. 
+
+			    <br><br>
+
+			    The input data is transformed as User - Brand matrix, where row represents users, columns represents brands. Every cell indicates if the user has favourited that brand or not. For example - It can be observed as:
+			    <br><br>
+			 	<img src="static/img/1.png">
+			    <br><br>
+
+			    where, Mij = {1, if user i has favourited brand j, " " otherwise}
+
+			    <br><br>
+
+			    This User - Brand matrix is the converted to Brand - Brand matrix, where both rows and columns reprsents the brands. Every cell contains a number, which is number of times both brands appeared together. OR When both brands were favourited by one user. Example - 
+
+			    <br><br>
+			    <img src="static/img/2.png">
+			    <br><br>
+
+			    where, Bij = {n, if brand i brand j are co-favourited together n number of times, 0 otherwise}
+
+			    <br><br>
+
+
+			    Next, is to identify the possible similar items for one item. For every row, the sorted values will indicate the possible similar brands.
+
+			    <br><br>
+			    <img src="static/img/3.png">
+			    <br><br>
+
+			    where, Possible Similar Brands = MAX[Brand Js with respect to brand i]
+
+			    <br><br>
+
+			    This roughly gives us the possible similar brands, however to add a confidence score there is a need to come up with better features, (may be brand descriptions, brand categories etc). Here we have a hit score as one feature (number of times two brands favourited together.) To derive this similarity threshold, I did some exploration around distribution of hit score frequencies. Tough bulkier amount of frequencies lie between 0 - 100, I kept a threshold of 70. ie, if the hit score is greater than 70, then we say the possible similar brands are actually similar. 
+
+			    These threshold needs to be better tuned, using techniques such as human loop, genetic algorithm etc. Which I have kept for future scope.
+
+			    <br><br>
+			    </p>
+	    		</div>
+	    	</div> 
+  		</div>
+		</div>
+		<br><br>
+	</div>
+</div>
+</body>
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+	
+jQuery(function () {
+    jQuery('#myTab a:first').tab('show')
+})
+</script>
+</html>
