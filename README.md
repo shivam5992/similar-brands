@@ -4,4 +4,4 @@ A basic collaborative filtering model to find similar brands using user purchase
 
 # Read complete blog at - 
 
-http://analyticsindiamag.com/common-analytics-interview-questions/
+http://analyticsindiamag.com/building-collaborative-filtering-recommendation-engine-15-minutes/
